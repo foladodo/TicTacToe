@@ -7,6 +7,7 @@ const winningMessageText = document.querySelector('[data-winning-text')
 const cellElements = document.querySelectorAll('[data-cell]')
 const winningCombinations = [[0,1,2],[0,4,8],[2,4,6],[3,4,5],[0,3,6],[2,5,8],[7,4,1],[6,7,8]]
 let circleTurn = false
+let arra
 let CURRENT_CLASS = circleTurn ? circle_constant : x_constant
 let gameON = true
 let win
@@ -26,6 +27,7 @@ function startGame() {
     cellElements.forEach((cell,key) => {
         cell.classList.remove(x_constant)
         cell.classList.remove(circle_constant)
+        cell.classList.remove("won")
         cell.addEventListener("click", handleClick, {once:true} )}
         )
     setBoardHoverClass(CURRENT_CLASS)
@@ -35,7 +37,6 @@ function endGame(draw) {
     if (draw) {
         winningMessageText.innerText = `Draw`
     } else {
-        console.log(circle_constant)
         winningMessageText.innerText = `${circleTurn ? "O's" : "X's"} Win!`
     }
     winningDisplay.classList.add("show")
@@ -49,10 +50,6 @@ function arrayIsEqual(a, b) {
 }
 
 function setBoardHoverClass(CURRENT_CLASS) {
-    /** BOARD_CLASS = CURRENT_CLASS == circle_constant ? x_constant : circle_constant
-    board.classList.remove(CURRENT_CLASS)
-    board.classList.add(BOARD_CLASS)
-    board.classList.remove(CURRENT_CLASS) **/
     board.classList.remove(x_constant)
     board.classList.remove(circle_constant)
     if (circleTurn) {  
@@ -68,13 +65,17 @@ function swapTurns() {
 }
 
 function checkForWin(CURRENT_CLASS) {
+    
     win =  winningCombinations.some((value,index) => {
-        return value.every((v,i) => {
+        return value.every((v,i,a) => {
+            arra = a
             return cellElements[v].classList[1] == CURRENT_CLASS
         })
     })
     if (win) {
-        console.log(CURRENT_CLASS + " WINS!")
+        arra.forEach((va,ind) => {
+            cellElements[va].classList.add("won")
+        })
         return win
     }
 }
@@ -84,7 +85,6 @@ function handleClick(a) {
     CURRENT_CLASS = circleTurn ? circle_constant : x_constant
     placeMark(cell, CURRENT_CLASS)
     //console.log(cellElements)
-    console.log(...cellElements)
     if(checkForWin(CURRENT_CLASS)) {
         endGame (false)
     } else if (isDraw()) {
